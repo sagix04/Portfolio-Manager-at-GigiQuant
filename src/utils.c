@@ -11,7 +11,6 @@ void citire_lista(FILE *f, Lista **p, Lista **q, int n){
     }
     (*p)->next = NULL;
 }
-
 void free_lista(Lista **p){
     while(*p){
         Lista *temp = *p;
@@ -20,7 +19,7 @@ void free_lista(Lista **p){
     }
 }
 
-//principale
+//task1
 double Sum_Randament(Lista *p){
     double sum=0;
     while(p){
@@ -29,7 +28,6 @@ double Sum_Randament(Lista *p){
     }
     return sum;
 }
-
 double Sum_Deviatie(Lista *p, double avg_randament){
     double sum=0;
     while(p){
@@ -38,7 +36,6 @@ double Sum_Deviatie(Lista *p, double avg_randament){
     }
     return sum;
 }
-
 void Randament_Zi(Lista *p, Lista *q){
     while(q){
         q->randament = (q->valoare - p->valoare)/p->valoare;
@@ -46,11 +43,9 @@ void Randament_Zi(Lista *p, Lista *q){
         q = q->next;
     }
 }
-
 double Sharpe_Ratio(double avg_randament, double std_deviatie){
     return avg_randament/std_deviatie;
 }
-
 void task1(FILE *f, FILE *g){
     Lista *head=NULL, *curent=NULL, *urmator=NULL;
     int Nr_obs;
@@ -77,25 +72,15 @@ void task1(FILE *f, FILE *g){
     double std_deviatie = sqrt(Sum_Deviatie(head->next, avg_randament)/(Nr_obs-1));
     double sh_ratio = Sharpe_Ratio(avg_randament, std_deviatie);
 
-    if(avg_randament > 0 || avg_randament == (floor)(avg_randament))
-        avg_randament = (floor)(avg_randament * 1000)/ 1000;
-    else
-        avg_randament = (floor)(avg_randament * 1000 + 1)/ 1000;
-
-    if(std_deviatie > 0 || std_deviatie == (floor)(std_deviatie))
-        std_deviatie = (floor)(std_deviatie * 1000)/ 1000;
-    else
-        std_deviatie = (floor)(std_deviatie * 1000 + 1)/ 1000;    
-        
-    if(sh_ratio > 0 || sh_ratio == (floor)(sh_ratio))
-        sh_ratio = (floor)(sh_ratio * 1000)/ 1000;
-    else
-        sh_ratio = (floor)(sh_ratio * 1000 + 1)/ 1000;
+        avg_randament = trunc(avg_randament * 1000)/ 1000;
+        std_deviatie = trunc(std_deviatie * 1000)/ 1000;
+        sh_ratio = trunc(sh_ratio * 1000)/ 1000;
 
     fprintf(g, "%.3lf\n%.3lf\n%.3lf\n", avg_randament, std_deviatie, sh_ratio);
     free_lista(&head);
 }
 
+//task2
 void task2(FILE *f, FILE *g){
 
 }
@@ -105,5 +90,5 @@ void task3(FILE *f, FILE *g){
 }
 
 void task4(FILE *f, FILE *g){
-    
+
 }

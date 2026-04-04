@@ -21,9 +21,9 @@ int main(int argc, char *argv[])
     }
 
     FILE *g = stdout;
-    if (argc >= 3) {
+    if (argc >= 3){
         g = fopen(argv[2], "w");
-        if (g == NULL) {
+        if (g == NULL){
             fclose(f);
             return 1;
         }

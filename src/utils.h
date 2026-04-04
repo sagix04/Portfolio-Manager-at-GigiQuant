@@ -5,16 +5,14 @@
 #include <stdlib.h>
 #include <math.h>
 
+//Data structures
 typedef struct Node{
     double valoare;
     double randament;
     struct Node* next;
 }Lista;
 
-
-//antet functii
-
-//bonus
+//More Functions
 void citire_lista(FILE *f, Lista **p, Lista **q, int n);
 void free_lista(Lista **p);
 
