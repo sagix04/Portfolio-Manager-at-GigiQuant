@@ -31,15 +31,12 @@ int main(int argc, char *argv[])
 
     if (data_in >= 1 && data_in <= 5)
         task1(f, g);     
-    //DE REPARAT FUNCTIILE PENTRU AVG_R, STD, SH_RATIO
-    /*
     else if(data_in >= 6 && data_in <= 10) 
         task2(f, g);
     else if(data_in >= 11 && data_in <= 15)
         task3(f, g);
     else if(data_in >= 16 && data_in <= 20)
         task4(f, g);
-    */
 
     fclose(f);
     if (g != stdout) fclose(g);    

@@ -18,14 +18,20 @@ typedef struct Node{
 void citire_lista(FILE *f, Lista **p, Lista **q, int n);
 void free_lista(Lista **p);
 
-//interviu 1
+//task1
 double Sum_Randament(Lista *p);
 double Sum_Deviatie(Lista *p, double avg_randament);
 void Randament_Zi(Lista *p, Lista *q);
 double Sharpe_Ratio(double avg_randament, double std_deviatie);
 void task1(FILE *f, FILE *g);
-//interviu 2
 
-//API (bonus)
+//task2
+void task2(FILE *f, FILE *g);
+
+//taskk3
+void task3(FILE *f, FILE *g);
+
+//task4 - API (bonus)
+void task4(FILE *f, FILE *g);
 
 #endif

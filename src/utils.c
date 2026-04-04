@@ -9,6 +9,7 @@ void citire_lista(FILE *f, Lista **p, Lista **q, int n){
         (*p)->next = *q;
         *p = (*p)->next;
     }
+    (*p)->next = NULL;
 }
 
 void free_lista(Lista **p){
@@ -76,12 +77,33 @@ void task1(FILE *f, FILE *g){
     double std_deviatie = sqrt(Sum_Deviatie(head->next, avg_randament)/(Nr_obs-1));
     double sh_ratio = Sharpe_Ratio(avg_randament, std_deviatie);
 
-    if(avg_randament > 0) avg_randament = ((floor)(avg_randament*1000))/1000;
-        else avg_randament = ((floor)(avg_randament*1000)+1)/1000;
+    if(avg_randament > 0 || avg_randament == (floor)(avg_randament))
+        avg_randament = (floor)(avg_randament * 1000)/ 1000;
+    else
+        avg_randament = (floor)(avg_randament * 1000 + 1)/ 1000;
 
-    if(std_deviatie > 0) std_deviatie = ((floor)(std_deviatie*1000))/1000;
-        else std_deviatie = ((floor)(std_deviatie*1000)+1)/1000;
-    
+    if(std_deviatie > 0 || std_deviatie == (floor)(std_deviatie))
+        std_deviatie = (floor)(std_deviatie * 1000)/ 1000;
+    else
+        std_deviatie = (floor)(std_deviatie * 1000 + 1)/ 1000;    
+        
+    if(sh_ratio > 0 || sh_ratio == (floor)(sh_ratio))
+        sh_ratio = (floor)(sh_ratio * 1000)/ 1000;
+    else
+        sh_ratio = (floor)(sh_ratio * 1000 + 1)/ 1000;
+
     fprintf(g, "%.3lf\n%.3lf\n%.3lf\n", avg_randament, std_deviatie, sh_ratio);
     free_lista(&head);
+}
+
+void task2(FILE *f, FILE *g){
+
+}
+
+void task3(FILE *f, FILE *g){
+
+}
+
+void task4(FILE *f, FILE *g){
+    
 }
