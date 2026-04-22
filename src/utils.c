@@ -1,6 +1,6 @@
 #include "utils.h"
 
-//facultative
+//task1
 void citire_lista(FILE *f, Lista **p, Lista **q, int n){
     for(int i=1; i < n; i++){
         *q = (Lista *)malloc(sizeof(Lista));
@@ -11,6 +11,7 @@ void citire_lista(FILE *f, Lista **p, Lista **q, int n){
     }
     (*p)->next = NULL;
 }
+
 void free_lista(Lista **p){
     while(*p){
         Lista *temp = *p;
@@ -19,7 +20,6 @@ void free_lista(Lista **p){
     }
 }
 
-//task1
 double Sum_Randament(Lista *p){
     double sum=0;
     while(p){
@@ -28,6 +28,7 @@ double Sum_Randament(Lista *p){
     }
     return sum;
 }
+
 double Sum_Deviatie(Lista *p, double avg_randament){
     double sum=0;
     while(p){
@@ -36,6 +37,7 @@ double Sum_Deviatie(Lista *p, double avg_randament){
     }
     return sum;
 }
+
 void Randament_Zi(Lista *p, Lista *q){
     while(q){
         q->randament = (q->valoare - p->valoare)/p->valoare;
@@ -43,9 +45,11 @@ void Randament_Zi(Lista *p, Lista *q){
         q = q->next;
     }
 }
+
 double Sharpe_Ratio(double avg_randament, double std_deviatie){
     return avg_randament/std_deviatie;
 }
+
 void task1(FILE *f, FILE *g){
     Lista *head=NULL, *curent=NULL, *urmator=NULL;
     int Nr_obs;
@@ -81,8 +85,48 @@ void task1(FILE *f, FILE *g){
 }
 
 //task2
-void task2(FILE *f, FILE *g){
+void citire_stiva(FILE *f, Stack **p, char nume[]){
+    char val[101];
+    fgets(val, 100, f);
+    while(('A' > val[0] || 'z' < val[0]) && f){
+        Stack *q = malloc(sizeof(Stack));
+        q->valoare = atof(val);
+        q->next = *p; 
+        *p = q;
+        fgets(val, 100, f);
+    }
+    strcpy(nume, val);
+}
 
+void free_stiva(Stack **p){
+    while(*p){
+        Stack *temp = *p;
+        (*p) = (*p)->next;
+        free(temp);
+    }
+}
+
+void task2(FILE *f, FILE *g){
+    //REMINDER
+//mai intai populam primul oras, apoi al 2lea, sasmd
+//dupa populare, se foloseste un while pentru a parcurge stivele siimultan in ordinea zilei, pana la terminarea stivei mai scurte
+//in interiorul while ului se folosesc cele 3 reguli si metoda de afisare. Thats all
+    City oras[3];
+    fgets(oras[0].nume, 100, f);
+    oras[0].pointer = NULL;
+    int n = 2;
+    for(int i=0; i < n; i++){
+        citire_stiva(f, &(oras[i].pointer), oras[i+1].nume); //citeste valorile stak-ului, 
+        //si populeaza lista i
+        oras[i+1].pointer = NULL;
+    }
+    
+    /*
+    while(oras[0].pointer && oras[1].pointer && oras[2].pointer){
+
+    }
+    De terminat while-ul si de curatat cele 3 stive din vector
+    */
 }
 
 void task3(FILE *f, FILE *g){

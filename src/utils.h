@@ -6,15 +6,26 @@
 #include <math.h>
 
 //Data structures
-typedef struct Node{
+typedef struct a{
     double valoare;
     double randament;
-    struct Node* next;
+    struct a* next;
 }Lista;
+
+typedef struct b{
+    double valoare;
+    struct b *next;
+}Stack;
+
+typedef struct c{
+    Stack *pointer;
+    char nume[101];
+}City;
 
 //More Functions
 void citire_lista(FILE *f, Lista **p, Lista **q, int n);
 void free_lista(Lista **p);
+void citire_stiva(FILE *f, Stack **p, char nume[]);
 
 //task1
 double Sum_Randament(Lista *p);
