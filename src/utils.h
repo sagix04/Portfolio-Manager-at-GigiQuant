@@ -22,10 +22,23 @@ typedef struct c{
     char nume[101];
 }City;
 
+typedef struct d{
+    char nume[101];
+    int ziua;
+    double diferenta;
+    struct d *next;
+}Node;
+
+typedef struct e{
+    Node *head, *rear;
+}Oportunitate;
+
 //More Functions
 void citire_lista(FILE *f, Lista **p, Lista **q, int n);
 void free_lista(Lista **p);
 void citire_stiva(FILE *f, Stack **p, char nume[]);
+void print_coada(FILE *g, Oportunitate p);
+void free_coada(Node **p);
 
 //task1
 double Sum_Randament(Lista *p);

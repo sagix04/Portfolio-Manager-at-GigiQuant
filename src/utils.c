@@ -86,16 +86,19 @@ void task1(FILE *f, FILE *g){
 
 //task2
 void citire_stiva(FILE *f, Stack **p, char nume[]){
-    char val[101];
-    fgets(val, 100, f);
-    while(('A' > val[0] || 'z' < val[0]) && f){
-        Stack *q = malloc(sizeof(Stack));
-        q->valoare = atof(val);
-        q->next = *p; 
-        *p = q;
-        fgets(val, 100, f);
-    }
-    strcpy(nume, val);
+    char linie[101];
+
+    while (fgets(linie, 100, f) != NULL)
+        if (strchr("1234567890", linie[0])){
+            Stack *q = malloc(sizeof(Stack));
+            q->valoare = atof(linie);
+            q->next = *p;
+            *p = q;
+        }
+        else{
+            strcpy(nume, linie);
+            return;
+        }
 }
 
 void free_stiva(Stack **p){
@@ -106,27 +109,109 @@ void free_stiva(Stack **p){
     }
 }
 
+void print_coada(FILE *g, Oportunitate p){
+    while(p.head){
+        fprintf(g, "ziua %d - %.2lf - %s", p.head->ziua, p.head->diferenta, p.head->nume);
+        p.head = p.head->next;
+    }
+}
+
+void free_coada(Node **p){
+    while(*p){
+        Node *temp = *p;
+        (*p) = (*p)->next;
+        free(temp);
+    }
+}
+
 void task2(FILE *f, FILE *g){
-    //REMINDER
-//mai intai populam primul oras, apoi al 2lea, sasmd
-//dupa populare, se foloseste un while pentru a parcurge stivele siimultan in ordinea zilei, pana la terminarea stivei mai scurte
-//in interiorul while ului se folosesc cele 3 reguli si metoda de afisare. Thats all
     City oras[3];
+    char nume[101];
     fgets(oras[0].nume, 100, f);
     oras[0].pointer = NULL;
-    int n = 2;
-    for(int i=0; i < n; i++){
-        citire_stiva(f, &(oras[i].pointer), oras[i+1].nume); //citeste valorile stak-ului, 
-        //si populeaza lista i
-        oras[i+1].pointer = NULL;
+
+    int i, n=3;
+    for (i = 0; i < n; i++){
+        oras[i].pointer = NULL;
+        if(i < n-1)
+            citire_stiva(f, &(oras[i].pointer), oras[i+1].nume);
+        else
+            citire_stiva(f, &(oras[i].pointer), nume);
     }
     
-    /*
-    while(oras[0].pointer && oras[1].pointer && oras[2].pointer){
+    i = 1;
+    int OK=0;
+    Oportunitate coada;
+    coada.head = NULL;
+    coada.rear = NULL;
+    Stack *p0 = oras[0].pointer, *p1 = oras[1].pointer, *p2 = oras[2].pointer;
+    while(p0 && p1 && p2){
+        if(p0->valoare == p1->valoare && p2->valoare != p0->valoare){
+            Node *temp = malloc(sizeof(Node));
+            strcpy(temp->nume, oras[2].nume);
+            temp->diferenta = p2->valoare - p0->valoare;
+            if(temp->diferenta < 0)
+                temp->diferenta = -temp->diferenta;
+            temp->ziua = i;
+            temp->next = NULL;
 
+            if (OK == 0){
+                coada.head = temp;
+                coada.rear = temp;
+                OK++;
+            }
+            else{
+                coada.rear->next = temp;
+                coada.rear = temp;
+            }
+        }
+        else if(p0->valoare == p2->valoare && p1->valoare != p0->valoare){
+            Node *temp = malloc(sizeof(Node));
+            strcpy(temp->nume, oras[1].nume);
+            temp->diferenta = p1->valoare - p0->valoare;
+            if(temp->diferenta < 0)
+                temp->diferenta = -temp->diferenta;
+            temp->ziua = i;
+            temp->next = NULL;
+
+            if (OK == 0){
+                coada.head = temp;
+                coada.rear = temp;
+                OK++;
+            }
+            else{
+                coada.rear->next = temp;
+                coada.rear = temp;
+            }
+        }
+        else if (p2->valoare == p1->valoare && p2->valoare != p0->valoare){
+            Node *temp = malloc(sizeof(Node));
+            strcpy(temp->nume, oras[0].nume);
+            temp->diferenta = p2->valoare - p0->valoare;
+            if(temp->diferenta < 0)
+                temp->diferenta = -temp->diferenta;temp->ziua = i;
+            temp->next = NULL;
+            if (OK == 0){
+                coada.head = temp;
+                coada.rear = temp;
+                OK++;
+            }
+            else{
+                coada.rear->next = temp;
+                coada.rear = temp;
+            }
+        }
+        p0 = p0->next;
+        p1 = p1->next;
+        p2 = p2->next;
+        i++;
     }
-    De terminat while-ul si de curatat cele 3 stive din vector
-    */
+
+    for(i=0; i < n; i++)
+        free_stiva(&(oras[i].pointer));
+
+    print_coada(g, coada);
+    free_coada(&(coada.head));
 }
 
 void task3(FILE *f, FILE *g){
