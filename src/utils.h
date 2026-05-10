@@ -36,14 +36,14 @@ typedef struct{
 typedef struct StockList{
     char symbol[5];
     struct StockList *next;
-} StockList;
+}StockList;
 
 typedef struct TreeNode{
     StockList *stocks; 
     struct TreeNode *left;
     struct TreeNode *right;
     int depth;
-} TreeNode;
+}TreeNode;
 
 
 //More Functions
@@ -64,6 +64,8 @@ void task1(FILE *f, FILE *g);
 void task2(FILE *f, FILE *g);
 
 //taskk3
+void BST(TreeNode *nod, char nume[][5], double pret[][10]);
+void Comparare_drumuri(TreeNode *nod);
 void task3(FILE *f, FILE *g);
 
 //task4 - API (bonus)

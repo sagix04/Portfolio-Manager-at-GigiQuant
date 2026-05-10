@@ -214,14 +214,64 @@ void task2(FILE *f, FILE *g){
 }
 
 //task3
-void task3(FILE *f, FILE *g){
-    /*
-        De creat un arbore cu structurile din interviu, de folosit task ul 1 pt oportunitatile la fiecare 
-        actiune, de comparat intr un anume fel fiecare actiune pentru a construi un bst, valoarea nodului va 
-        fi media aritmetica a actiunilor
-    */
+void BST(TreeNode *nod, char nume[][5], double pret[][10]){
+
+    if(nod->depth > 3) return;
+    int zi = nod->depth;
+    StockList *curr = nod->stocks;
+    while(curr != NULL){
+        //De comparat nodul curent cu lista de actiuni pt a afla pozitia sa in ordinea in care a fost 
+        // citita (pt vector si matrice), iar apoi de comparat cu ziua anterioara pentru a genera drumul sau
+    }
+
+    BST(nod->left, nume, pret);
+    BST(nod->right, nume, pret);
 }
 
+void Comparare_drumuri(TreeNode *nod){
+    //de completat dupa functia BST
+}
+
+void task3(FILE *f, FILE *g){
+    char nume[10][5];
+    double pret[3][10];
+
+    for(int i = 0; i < 10; i++){
+        fscanf(f, "%4s", nume[i]);
+        fgetc(f); 
+    }
+
+    for(int i = 0; i < 3; i++)
+        for(int j = 0; j < 10; j++){
+            fscanf(f, "%lf", &pret[i][j]);
+            fgetc(f);
+        }
+
+    TreeNode *root = malloc(sizeof(TreeNode));
+    root->stocks = NULL;
+    root->left = NULL;
+    root->right = NULL;
+    root->depth = 1;
+    StockList *p = NULL, *q = NULL;
+    for(int i = 0; i < 10; i++) {
+        q = malloc(sizeof(StockList));
+        strcpy(q->symbol, nume[i]);
+        q->next = NULL;
+
+        if (root->stocks == NULL){
+            root->stocks = q;
+            p = q;
+        }
+        else{
+            p->next = q;
+            p = q;
+        }
+    }
+    BST(root, nume, pret);
+
+}
+
+//task4
 void task4(FILE *f, FILE *g){
 
 }
