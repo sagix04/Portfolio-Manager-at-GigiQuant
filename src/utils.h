@@ -6,32 +6,45 @@
 #include <math.h>
 
 //Data structures
-typedef struct a{
+typedef struct Lista{
     double valoare;
     double randament;
-    struct a* next;
+    struct Lista* next;
 }Lista;
 
-typedef struct b{
+typedef struct Stack{
     double valoare;
-    struct b *next;
+    struct Stack *next;
 }Stack;
 
-typedef struct c{
+typedef struct{
     Stack *pointer;
     char nume[101];
 }City;
 
-typedef struct d{
+typedef struct Node{
     char nume[101];
     int ziua;
     double diferenta;
-    struct d *next;
+    struct Node *next;
 }Node;
 
-typedef struct e{
+typedef struct{
     Node *head, *rear;
 }Oportunitate;
+
+typedef struct StockList{
+    char symbol[5];
+    struct StockList *next;
+} StockList;
+
+typedef struct TreeNode{
+    StockList *stocks; 
+    struct TreeNode *left;
+    struct TreeNode *right;
+    int depth;
+} TreeNode;
+
 
 //More Functions
 void citire_lista(FILE *f, Lista **p, Lista **q, int n);

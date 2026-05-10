@@ -74,11 +74,10 @@ void task1(FILE *f, FILE *g){
     Randament_Zi(curent, urmator);
     double avg_randament = Sum_Randament(head->next)/(Nr_obs-1);
     double std_deviatie = sqrt(Sum_Deviatie(head->next, avg_randament)/(Nr_obs-1));
-    double sh_ratio = Sharpe_Ratio(avg_randament, std_deviatie);
+    double sh_ratio = trunc(Sharpe_Ratio(avg_randament, std_deviatie) *1000) / 1000;
 
         avg_randament = trunc(avg_randament * 1000)/ 1000;
         std_deviatie = trunc(std_deviatie * 1000)/ 1000;
-        sh_ratio = trunc(sh_ratio * 1000)/ 1000;
 
     fprintf(g, "%.3lf\n%.3lf\n%.3lf\n", avg_randament, std_deviatie, sh_ratio);
     free_lista(&head);
@@ -214,8 +213,13 @@ void task2(FILE *f, FILE *g){
     free_coada(&(coada.head));
 }
 
+//task3
 void task3(FILE *f, FILE *g){
-
+    /*
+        De creat un arbore cu structurile din interviu, de folosit task ul 1 pt oportunitatile la fiecare 
+        actiune, de comparat intr un anume fel fiecare actiune pentru a construi un bst, valoarea nodului va 
+        fi media aritmetica a actiunilor
+    */
 }
 
 void task4(FILE *f, FILE *g){
