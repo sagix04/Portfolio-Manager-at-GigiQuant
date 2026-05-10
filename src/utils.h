@@ -52,6 +52,7 @@ void free_lista(Lista **p);
 void citire_stiva(FILE *f, Stack **p, char nume[]);
 void print_coada(FILE *g, Oportunitate p);
 void free_coada(Node **p);
+void free_tree(TreeNode *root);
 
 //task1
 double Sum_Randament(Lista *p);
@@ -65,7 +66,7 @@ void task2(FILE *f, FILE *g);
 
 //taskk3
 void BST(TreeNode *nod, char nume[][5], double pret[][10]);
-void Comparare_drumuri(TreeNode *nod);
+void Comparare_drumuri(TreeNode *nod, char nume[10][5], double pret[3][10], FILE *g);
 void task3(FILE *f, FILE *g);
 
 //task4 - API (bonus)

@@ -215,60 +215,152 @@ void task2(FILE *f, FILE *g){
 
 //task3
 void BST(TreeNode *nod, char nume[][5], double pret[][10]){
-
-    if(nod->depth > 3) return;
+    if(nod == NULL || nod->depth >= 4) return;
     int zi = nod->depth;
     StockList *curr = nod->stocks;
     while(curr != NULL){
-        //De comparat nodul curent cu lista de actiuni pt a afla pozitia sa in ordinea in care a fost 
-        // citita (pt vector si matrice), iar apoi de comparat cu ziua anterioara pentru a genera drumul sau
+        int i = 0;
+        while(i < 10 && strcmp(curr->symbol, nume[i]) != 0) 
+            i++;
+        
+        if(i < 10){
+            if(pret[zi][i] < pret[zi - 1][i]){
+                if(nod->left == NULL){
+                    nod->left = malloc(sizeof(TreeNode));
+                    nod->left->left = NULL;
+                    nod->left->stocks = NULL;
+                    nod->left->depth = nod->depth + 1;
+                }
+                StockList *nou = malloc(sizeof(StockList));
+                strcpy(nou->symbol, curr->symbol);
+                nou->next = NULL;
+                if(nod->left->stocks == NULL)
+                    nod->left->stocks = nou;
+                else{
+                    StockList *t = nod->left->stocks;
+                    while(t->next != NULL) 
+                        t = t->next;
+                    t->next = nou;
+                }
+            }
+            else{
+                if(nod->right == NULL){
+                    nod->right = malloc(sizeof(TreeNode));
+                    nod->right->left = NULL;
+                    nod->right->right = NULL;
+                    nod->right->stocks = NULL;
+                    nod->right->depth = nod->depth + 1;
+                }
+                StockList *nou = malloc(sizeof(StockList));
+                strcpy(nou->symbol, curr->symbol);
+                nou->next = NULL;
+                if (nod->right->stocks == NULL)
+                    nod->right->stocks = nou;
+                else{
+                    StockList *t = nod->right->stocks;
+                    while (t->next != NULL) 
+                        t = t->next;
+                    t->next = nou;
+                }
+            }
+        }
+        curr = curr->next;
     }
-
     BST(nod->left, nume, pret);
     BST(nod->right, nume, pret);
 }
 
-void Comparare_drumuri(TreeNode *nod){
-    //de completat dupa functia BST
+void Comparare_drumuri(TreeNode *root, char nume[][5], double pret[][10], FILE *g){
+    int OK = 1;
+    for(int i = 0; i < 10; i++){
+        TreeNode *oglindit = root;
+        for(int zi = 1; zi <= 3; zi++){
+            if(pret[zi][i] < pret[zi - 1][i]){
+                if(oglindit != NULL) 
+                    oglindit = oglindit->right;
+            }
+            else{
+                if(oglindit != NULL) 
+                    oglindit = oglindit->left;
+            }
+        }
+    
+        if(oglindit != NULL && oglindit->stocks != NULL){
+            StockList *temp = oglindit->stocks;
+            while(temp != NULL){
+                int j = 0;
+                while(j < 10 && strcmp(temp->symbol, nume[j]) != 0) j++;
+                if(j > i && j < 10){
+                    int check = 1;
+                    for(int k = 1; k <= 3; k++){
+                        if((pret[k][i] < pret[k-1][i]) == (pret[k][j] < pret[k-1][j])){
+                            check = 0;
+                            break;
+                        }
+                    }
+                    if(check == 1){
+                        if(OK == 0) 
+                            fprintf(g, "\n");
+                        fprintf(g, "%s-%s", nume[i], nume[j]);
+                        OK = 0;
+                    }
+                }
+                temp = temp->next;
+            }
+        }
+    }
+}
+
+void free_tree(TreeNode *root){
+    if(root == NULL) return;
+    free_tree(root->left);
+    free_tree(root->right);
+    
+    StockList *curr = root->stocks;
+    while(curr != NULL){
+        StockList *temp = curr;
+        curr = curr->next;
+        free(temp);
+    }
+    free(root);
 }
 
 void task3(FILE *f, FILE *g){
     char nume[10][5];
-    double pret[3][10];
+    double pret[4][10];
 
     for(int i = 0; i < 10; i++){
-        fscanf(f, "%4s", nume[i]);
-        fgetc(f); 
+        fscanf(f, " %4[^,\n\r]", nume[i]);
+        fgetc(f);
     }
-
-    for(int i = 0; i < 3; i++)
+    for(int i = 0; i < 4; i++)
         for(int j = 0; j < 10; j++){
             fscanf(f, "%lf", &pret[i][j]);
             fgetc(f);
         }
 
     TreeNode *root = malloc(sizeof(TreeNode));
+    root->left = root->right = NULL;
     root->stocks = NULL;
-    root->left = NULL;
-    root->right = NULL;
     root->depth = 1;
-    StockList *p = NULL, *q = NULL;
-    for(int i = 0; i < 10; i++) {
-        q = malloc(sizeof(StockList));
+    StockList *p = NULL;
+    for (int i = 0; i < 10; i++){
+        StockList *q = malloc(sizeof(StockList));
         strcpy(q->symbol, nume[i]);
         q->next = NULL;
-
-        if (root->stocks == NULL){
-            root->stocks = q;
+        if(root->stocks == NULL){
+            root->stocks = q; 
             p = q;
         }
         else{
-            p->next = q;
+            p->next = q; 
             p = q;
         }
     }
-    BST(root, nume, pret);
 
+    BST(root, nume, pret);
+    Comparare_drumuri(root, nume, pret, g);
+    free_tree(root);
 }
 
 //task4
