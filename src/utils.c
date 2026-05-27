@@ -364,6 +364,64 @@ void task3(FILE *f, FILE *g){
 }
 
 //task4
-void task4(FILE *f, FILE *g){
+Typedef struct Muchie{
+    int nod_dest;
+    int frecventa;
+    struct Muchie *next;
+}Muchie;
 
+void task4(FILE *f, FILE *g){
+    int n, k_zile, intervale[1000], stari[200], nr_stari = 0;
+    int id_start = -1, id_target = -1, u, v;
+    int out[200];
+    double d, p_start, p_target, preturi[1000];
+
+    fscanf(f, "%d %lf %d %lf %lf", &n, &d, &k_zile, &p_start, &p_target);
+
+    for (int i = 0; i < n; i++){
+        fscanf(f, "%lf", &preturi[i]);
+        intervale[i] = (int)(preturi[i] / d);
+    }
+
+    for (int i = 0; i < n; i++){
+        int ok = 0;
+        for (int j = 0; j < nr_stari; j++)
+            if (stari[j] == intervale[i])
+                ok = 1;
+        
+        if (ok == 0){
+            stari[nr_stari] = intervale[i];
+            nr_stari++;
+        }
+    }
+
+    Muchie *graf[200];
+
+    for (int i = 0; i < nr_stari; i++){
+        if (stari[i] == (int)(p_start / d))
+            id_start = i;
+        if (stari[i] == (int)(p_target / d))
+            id_target = i;
+            
+        out[i] = 0;
+        graf[i] = NULL;
+    }
+
+    for (int i = 0; i < n - 1; i++){
+        for (int j = 0; j < nr_stari; j++){
+            if (stari[j] == intervale[i])
+                u = i;
+            if (stari[j] == intervale[i + 1])
+                v = j;
+        }
+        
+        out[u]++;
+        
+        /*
+TODO:muchia u->v in lista/incrementat frecventa daca exista deja
+*/
+    }
+/*
+    TODO:lanntul Markov pe k_zile + afisat probabilitatea ca fractie
+*/
 }
