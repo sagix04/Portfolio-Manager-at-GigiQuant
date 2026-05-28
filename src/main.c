@@ -37,9 +37,10 @@ int main(int argc, char *argv[]){
         task3(f, g);
     else if(data_in >= 16 && data_in <= 20)
         task4(f, g);
+/*
     else
         task5(f, g);
-
+*/
     fclose(f); fclose(g);    
     return 0;
 }

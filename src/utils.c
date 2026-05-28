@@ -223,9 +223,12 @@ void BST(TreeNode *nod, char nume[][5], double pret[][10]){
     StockList *curr = nod->stocks;
     while(curr != NULL){
         int i = 0;
+        //indicele actiunii
         while(i < 10 && strcmp(curr->symbol, nume[i]) != 0) 
             i++;
         
+        //fiecare nod se testeaza daca merge pe ramura din stanga sau dreapta
+        //se creeaza o lista pentru fiecare nod al arborelui pentru denumirea actiuniilor
         if(i < 10){
             if(pret[zi][i] < pret[zi - 1][i]){
                 if(nod->left == NULL){
@@ -279,7 +282,10 @@ void BST(TreeNode *nod, char nume[][5], double pret[][10]){
 void Comparare_drumuri(TreeNode *root, char nume[][5], double pret[][10], FILE *g){
     int OK = 1;
     for(int i = 0; i < 10; i++){
+        //actiune i, oglindit = opusul actiunii i
         TreeNode *oglindit = root;
+
+        //cale pentru oglindit
         for(int zi = 1; zi <= 3; zi++){
             if(pret[zi][i] < pret[zi - 1][i]){
                 if(oglindit != NULL) 
@@ -299,7 +305,8 @@ void Comparare_drumuri(TreeNode *root, char nume[][5], double pret[][10], FILE *
                 if(j > i && j < 10){
                     int check = 1;
                     for(int k = 1; k <= 3; k++){
-                        if((pret[k][i] < pret[k-1][i]) == (pret[k][j] < pret[k-1][j])){
+                        //dubla validare, ne asiguram ca nu se adevareste if-ul
+                        if((pret[k][i] < pret[k-1][i]) == (pret[k][j] < pret[k-1][j])){ 
                             check = 0;
                             break;
                         }
@@ -331,6 +338,7 @@ void free_tree(TreeNode *root){
     free(root);
 }
 
+//initializat matricile si arborele (root-ul)
 void task3(FILE *f, FILE *g){
     char nume[10][5];
     double pret[4][10];
@@ -370,6 +378,16 @@ void task3(FILE *f, FILE *g){
 }
 
 //task4
+long long cmmdc(long long a, long long b){
+    long long r;
+    while(b){
+        r = a % b;
+        a = b;
+        b = r;
+    }
+    return a;
+}
+
 void task4(FILE *f, FILE *g){
     int n, k_zile, intervale[1000], stari[200], nr_stari = 0, id_start = -1, id_target = -1, u, v, out[200];
     double d, p_start, p_target, preturi[1000];
@@ -385,8 +403,8 @@ void task4(FILE *f, FILE *g){
         for(int j = 0; j < nr_stari; j++)
             if(stari[j] == intervale[i])
                 ok = 1;
-        
-        if(ok == 0){
+        //stari unice
+        if(ok == 0){ 
             stari[nr_stari] = intervale[i];
             nr_stari++;
         }
@@ -402,22 +420,119 @@ void task4(FILE *f, FILE *g){
         out[i] = 0;
         graf[i] = NULL;
     }
-
     for(int i = 0; i < n - 1; i++){
         for(int j = 0; j < nr_stari; j++){
             if(stari[j] == intervale[i])
-                u = i;
+                u = j;
             if(stari[j] == intervale[i+1])
                 v = j;
         }
         
         out[u]++;
-        //TODO:muchia u->v in lista/incrementat frecventa daca exista deja
+
+        //Adaugam muchia u -> v
+        int gasit = 0;
+        Muchie *crt = graf[u];
+        while(crt != NULL){
+            if(crt->nod_dest == v){
+                crt->frecventa++;
+                gasit = 1;
+                break;
+            }
+            crt = crt->next;
+        }
+            
+        if(gasit == 0){
+            Muchie *nou = malloc(sizeof(Muchie));
+            nou->nod_dest = v;
+            nou->frecventa = 1;
+            nou->next = NULL;
+                    
+            if(graf[u] == NULL)
+                graf[u] = nou;
+            else{
+                Muchie *temp = graf[u];
+                while (temp->next != NULL)
+                    temp = temp->next;
+                temp->next = nou;
+            }
+        } 
     }
-    //TODO:lanntul Markov pe k_zile + afisat probabilitatea ca fractie
+
+    long long num[200], den[200];
+    for(int i = 0; i < nr_stari; i++){
+        num[i] = 0;
+        den[i] = 1;
+    }
+
+    if(id_start != -1)
+        num[id_start] = 1; 
+
+    for(int zi = 1; zi <= k_zile; zi++){
+        if (id_target != -1){
+            if (num[id_target] == 0)
+                fprintf(g, "0\n");
+            else if (den[id_target] == 1)
+                fprintf(g, "%lld\n", num[id_target]);
+            else
+                fprintf(g, "%lld/%lld\n", num[id_target], den[id_target]);
+        }
+        else{
+            fprintf(g, "0\n");
+        }
+
+        long long nn[200], nd[200];
+        for(int i = 0; i < nr_stari; i++){
+            nn[i] = 0;
+            nd[i] = 1;
+        }
+
+        for(int i = 0; i < nr_stari; i++){
+            if (num[i] > 0){ //Daca exista sanse sa fim in starea i
+                Muchie *crt = graf[i];
+                
+                while (crt != NULL){
+                    int dest = crt->nod_dest;
+                    
+                    //Inmultim probabilitatea starii actuale cu probabilitatea muchiei (frecventa / out)
+                    long long n1 = num[i] * crt->frecventa;
+                    long long d1 = den[i] * out[i];
+                    long long g1 = cmmdc(n1, d1);
+                    n1 /= g1;
+                    d1 /= g1;
+
+                    //Adunam toate cazurile
+                    long long top = nn[dest] * d1 + n1 * nd[dest];
+                    long long bot = nd[dest] * d1;
+                    long long g2 = cmmdc(top, bot);
+                    
+                    nn[dest] = top / g2;
+                    nd[dest] = bot / g2;
+
+                    crt = crt->next;
+                }
+            }
+        }
+        //Modificam vectorii pentru urmatoarea zi
+        for(int i = 0; i < nr_stari; i++){
+            num[i] = nn[i];
+            den[i] = nd[i];
+        }
+    }
+
+    //free
+    for (int i = 0; i < nr_stari; i++){
+        Muchie *crt = graf[i];
+        while (crt != NULL){
+            Muchie *temp = crt;
+            crt = crt->next;
+            free(temp);
+        }
+    }
 }
 
 //task5 - BONUS
+/*
 static size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, void *userp){
     size_t realsize = size * nmemb;
     struct MemoryStruct *mem = (struct MemoryStruct *) userp;
@@ -521,3 +636,4 @@ void task5(){
     task1_bonus(preturi, nr_preturi);
     free(preturi);
 }
+*/

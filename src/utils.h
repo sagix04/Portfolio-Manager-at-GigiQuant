@@ -4,8 +4,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>
-#include <curl/curl.h>
-#include "cJSON.h"
+//#include <curl/curl.h>
+//#include "cJSON.h"
 
 //Data structures
 
@@ -52,7 +52,7 @@ typedef struct TreeNode{
 }TreeNode;
 
 //task4 - graph
-Typedef struct Muchie{
+typedef struct Muchie{
     int nod_dest;
     int frecventa;
     struct Muchie *next;
@@ -89,14 +89,17 @@ void Comparare_drumuri(TreeNode *nod, char nume[10][5], double pret[3][10], FILE
 void task3(FILE *f, FILE *g);
 
 //task4
+long long cmmdc(long long a, long long b);
 void task4(FILE *f, FILE *g);
 
 //task bonus
+/*
 double* get_open_prices(const char* symbol, const char* interval, const char* range, int *count_out);
 static size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, void *userp);
 double* get_open_prices(const char* symbol, const char* interval, const char* range, int *count_out);
 void citire_lista2(double *pret, Lista **p, Lista **q, int n);
 void task1_bonus(double *preturi, int nr_preturi);
 void task5();
+*/
 
 #endif
