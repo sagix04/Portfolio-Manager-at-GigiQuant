@@ -4,7 +4,6 @@
 void citire_lista(FILE *f, Lista **p, Lista **q, int n){
     for(int i=1; i < n; i++){
         *q = (Lista *)malloc(sizeof(Lista));
-        //printf("valoarea profitului: ");
         fscanf(f, "%lf", &((*q)->valoare));
         (*p)->next = *q;
         *p = (*p)->next;
@@ -58,7 +57,7 @@ void task1(FILE *f, FILE *g){
     if(Nr_obs > 1){
         curent = malloc(sizeof(Lista));
         fscanf(f, "%lf", &curent->valoare);
-        curent->randament = 0;
+        curent->randament = 0; //Neutru pentru urmatoarea zi
         curent->next = NULL;
         head = curent;
     }
@@ -67,17 +66,20 @@ void task1(FILE *f, FILE *g){
         exit(1);
     }
 
+    //construirea listei
     citire_lista(f, &curent, &urmator, Nr_obs);
 
+    //reset pointeri
     curent = head;
     urmator = curent->next;
+
+    //calcule + trunchiere
     Randament_Zi(curent, urmator);
     double avg_randament = Sum_Randament(head->next)/(Nr_obs-1);
     double std_deviatie = sqrt(Sum_Deviatie(head->next, avg_randament)/(Nr_obs-1));
     double sh_ratio = trunc(Sharpe_Ratio(avg_randament, std_deviatie) *1000) / 1000;
-
-        avg_randament = trunc(avg_randament * 1000)/ 1000;
-        std_deviatie = trunc(std_deviatie * 1000)/ 1000;
+    avg_randament = trunc(avg_randament * 1000)/ 1000;
+    std_deviatie = trunc(std_deviatie * 1000)/ 1000;
 
     fprintf(g, "%.3lf\n%.3lf\n%.3lf\n", avg_randament, std_deviatie, sh_ratio);
     free_lista(&head);
@@ -88,7 +90,7 @@ void citire_stiva(FILE *f, Stack **p, char nume[]){
     char linie[101];
 
     while (fgets(linie, 100, f) != NULL)
-        if (strchr("1234567890", linie[0])){
+        if (strchr("1234567890", linie[0])){ //Alege daca e nume sau valoare
             Stack *q = malloc(sizeof(Stack));
             q->valoare = atof(linie);
             q->next = *p;
@@ -183,14 +185,14 @@ void task2(FILE *f, FILE *g){
                 coada.rear = temp;
             }
         }
-        else if (p2->valoare == p1->valoare && p2->valoare != p0->valoare){
+        else if(p2->valoare == p1->valoare && p2->valoare != p0->valoare){
             Node *temp = malloc(sizeof(Node));
             strcpy(temp->nume, oras[0].nume);
             temp->diferenta = p2->valoare - p0->valoare;
             if(temp->diferenta < 0)
                 temp->diferenta = -temp->diferenta;temp->ziua = i;
             temp->next = NULL;
-            if (OK == 0){
+            if(OK == 0){
                 coada.head = temp;
                 coada.rear = temp;
                 OK++;
@@ -214,6 +216,7 @@ void task2(FILE *f, FILE *g){
 }
 
 //task3
+//nu a fost predat la timp
 void BST(TreeNode *nod, char nume[][5], double pret[][10]){
     if(nod == NULL || nod->depth >= 4) return;
     int zi = nod->depth;
@@ -231,9 +234,11 @@ void BST(TreeNode *nod, char nume[][5], double pret[][10]){
                     nod->left->stocks = NULL;
                     nod->left->depth = nod->depth + 1;
                 }
+
                 StockList *nou = malloc(sizeof(StockList));
                 strcpy(nou->symbol, curr->symbol);
                 nou->next = NULL;
+
                 if(nod->left->stocks == NULL)
                     nod->left->stocks = nou;
                 else{
@@ -254,7 +259,8 @@ void BST(TreeNode *nod, char nume[][5], double pret[][10]){
                 StockList *nou = malloc(sizeof(StockList));
                 strcpy(nou->symbol, curr->symbol);
                 nou->next = NULL;
-                if (nod->right->stocks == NULL)
+                
+                if (nod->right->stocks == NULL) 
                     nod->right->stocks = nou;
                 else{
                     StockList *t = nod->right->stocks;
@@ -364,64 +370,154 @@ void task3(FILE *f, FILE *g){
 }
 
 //task4
-Typedef struct Muchie{
-    int nod_dest;
-    int frecventa;
-    struct Muchie *next;
-}Muchie;
-
 void task4(FILE *f, FILE *g){
-    int n, k_zile, intervale[1000], stari[200], nr_stari = 0;
-    int id_start = -1, id_target = -1, u, v;
-    int out[200];
+    int n, k_zile, intervale[1000], stari[200], nr_stari = 0, id_start = -1, id_target = -1, u, v, out[200];
     double d, p_start, p_target, preturi[1000];
 
     fscanf(f, "%d %lf %d %lf %lf", &n, &d, &k_zile, &p_start, &p_target);
-
-    for (int i = 0; i < n; i++){
+    for(int i = 0; i < n; i++){
         fscanf(f, "%lf", &preturi[i]);
         intervale[i] = (int)(preturi[i] / d);
     }
 
-    for (int i = 0; i < n; i++){
+    for(int i = 0; i < n; i++){
         int ok = 0;
-        for (int j = 0; j < nr_stari; j++)
-            if (stari[j] == intervale[i])
+        for(int j = 0; j < nr_stari; j++)
+            if(stari[j] == intervale[i])
                 ok = 1;
         
-        if (ok == 0){
+        if(ok == 0){
             stari[nr_stari] = intervale[i];
             nr_stari++;
         }
     }
 
     Muchie *graf[200];
-
-    for (int i = 0; i < nr_stari; i++){
-        if (stari[i] == (int)(p_start / d))
+    for(int i = 0; i < nr_stari; i++){
+        if(stari[i] == (int)(p_start / d))
             id_start = i;
-        if (stari[i] == (int)(p_target / d))
+        if(stari[i] == (int)(p_target / d))
             id_target = i;
             
         out[i] = 0;
         graf[i] = NULL;
     }
 
-    for (int i = 0; i < n - 1; i++){
-        for (int j = 0; j < nr_stari; j++){
-            if (stari[j] == intervale[i])
+    for(int i = 0; i < n - 1; i++){
+        for(int j = 0; j < nr_stari; j++){
+            if(stari[j] == intervale[i])
                 u = i;
-            if (stari[j] == intervale[i + 1])
+            if(stari[j] == intervale[i+1])
                 v = j;
         }
         
         out[u]++;
-        
-        /*
-TODO:muchia u->v in lista/incrementat frecventa daca exista deja
-*/
+        //TODO:muchia u->v in lista/incrementat frecventa daca exista deja
     }
-/*
-    TODO:lanntul Markov pe k_zile + afisat probabilitatea ca fractie
-*/
+    //TODO:lanntul Markov pe k_zile + afisat probabilitatea ca fractie
+}
+
+//task5 - BONUS
+static size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, void *userp){
+    size_t realsize = size * nmemb;
+    struct MemoryStruct *mem = (struct MemoryStruct *) userp;
+    char *ptr = realloc(mem->memory, mem->size + realsize + 1);
+    
+    if (!ptr) return 0;
+    
+    mem->memory = ptr;
+    memcpy(&(mem->memory[mem->size]), contents, realsize);
+    mem->size += realsize;
+    mem->memory[mem->size] = 0;
+    
+    return realsize;
+}
+
+double* get_open_prices(const char* symbol, const char* interval, const char* range, int *count_out){
+    CURL *curl_handle;
+    struct MemoryStruct chunk = {malloc(1), 0};
+    char url[256];
+    double *prices = NULL;
+    
+    sprintf(url, "https://query1.finance.yahoo.com/v8/finance/chart/%s?interval=%s&range=%s", symbol, interval, range);
+    curl_handle = curl_easy_init();
+    
+    curl_easy_setopt(curl_handle, CURLOPT_URL, url);
+    curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
+    curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, (void *)&chunk);
+    curl_easy_setopt(curl_handle, CURLOPT_USERAGENT, "libcurl-agent/1.0");
+    
+    if (curl_easy_perform(curl_handle) == CURLE_OK) {
+        cJSON *json = cJSON_Parse(chunk.memory);
+        cJSON *result = cJSON_GetArrayItem(cJSON_GetObjectItem(cJSON_GetObjectItem(json, "chart"), "result"), 0);
+        cJSON *quote = cJSON_GetArrayItem(cJSON_GetObjectItem(cJSON_GetObjectItem(result, "indicators"), "quote"), 0);
+        cJSON *open_prices = cJSON_GetObjectItem(quote, "open");
+        
+        *count_out = cJSON_GetArraySize(open_prices);
+        prices = malloc((*count_out) * sizeof(double));
+        
+        for (int i = 0; i < *count_out; i++) {
+            cJSON *val = cJSON_GetArrayItem(open_prices, i);
+            prices[i] = cJSON_IsNumber(val) ? val->valuedouble : -1.0;
+        }
+        cJSON_Delete(json);
+    }
+    
+    curl_easy_cleanup(curl_handle);
+    free(chunk.memory);
+    
+    return prices;
+}
+
+void citire_lista2(double *pret, Lista **p, Lista **q, int n){
+    for(int i=1; i < n; i++){
+        *q = (Lista *)malloc(sizeof(Lista));
+        (*q)->valoare = pret[i];
+        (*p)->next = *q;
+        *p = (*p)->next;
+    }
+    (*p)->next = NULL;
+}
+
+void task1_bonus(double *pret, int n){
+    Lista *head=NULL, *curent=NULL, *urmator=NULL;
+    int Nr_obs = n;
+    if(Nr_obs > 1){
+        curent = malloc(sizeof(Lista));
+        curent->valoare = pret[0];
+        curent->randament = 0;
+        curent->next = NULL;
+        head = curent;
+    }
+
+    citire_lista2(pret, &curent, &urmator, n);
+
+    curent = head;
+    urmator = curent->next;
+    Randament_Zi(curent, urmator);
+    double avg_randament = Sum_Randament(head->next)/(Nr_obs-1);
+    double std_deviatie = sqrt(Sum_Deviatie(head->next, avg_randament)/(Nr_obs-1));
+    double sh_ratio = trunc(Sharpe_Ratio(avg_randament, std_deviatie) *1000) / 1000;
+
+        avg_randament = trunc(avg_randament * 1000)/ 1000;
+        std_deviatie = trunc(std_deviatie * 1000)/ 1000;
+
+    printf("randament: %.3lf\n" "deviatie: %.3lf\n" "shape ratio: %.3lf\n", avg_randament, std_deviatie, sh_ratio);
+    free_lista(&head);
+}
+
+void task5(){
+    //parametrii API
+    const char *simbol = "AAPL", *interval = "1d", *perioada = "1mo";
+
+    int nr_preturi = 0;
+    double *preturi = get_open_prices(simbol, interval, perioada, &nr_preturi);
+
+    printf("Preturile actiunii %s in ultima luna:\n", simbol);
+    for (int i = 0; i < nr_preturi; i++)
+        printf("Ziua %d: %.2lf\n", i + 1, preturi[i]);
+
+    //implementam task1 pentru task5
+    task1_bonus(preturi, nr_preturi);
+    free(preturi);
 }
