@@ -304,8 +304,8 @@ void Comparare_drumuri(TreeNode *root, char nume[][5], double pret[][10], FILE *
                 while(j < 10 && strcmp(temp->symbol, nume[j]) != 0) j++;
                 if(j > i && j < 10){
                     int check = 1;
+                    //dubla validare, ne asiguram ca nu se adevareste if-ul
                     for(int k = 1; k <= 3; k++){
-                        //dubla validare, ne asiguram ca nu se adevareste if-ul
                         if((pret[k][i] < pret[k-1][i]) == (pret[k][j] < pret[k-1][j])){ 
                             check = 0;
                             break;
@@ -430,11 +430,12 @@ void task4(FILE *f, FILE *g){
         
         out[u]++;
 
+        //De aici am continuat dupa deadline ul
         //Adaugam muchia u -> v
         int gasit = 0;
         Muchie *crt = graf[u];
         while(crt != NULL){
-            if(crt->nod_dest == v){
+            if(crt->nod_dest == v){ 
                 crt->frecventa++;
                 gasit = 1;
                 break;
@@ -459,7 +460,7 @@ void task4(FILE *f, FILE *g){
         } 
     }
 
-    long long num[200], den[200];
+    long long num[200], den[200]; //calculam probabilitatea
     for(int i = 0; i < nr_stari; i++){
         num[i] = 0;
         den[i] = 1;
@@ -475,7 +476,10 @@ void task4(FILE *f, FILE *g){
             else if (den[id_target] == 1)
                 fprintf(g, "%lld\n", num[id_target]);
             else
-                fprintf(g, "%lld/%lld\n", num[id_target], den[id_target]);
+                if(zi < k_zile)
+                    fprintf(g, "%lld/%lld\n", num[id_target], den[id_target]);
+                else
+                    fprintf(g, "%lld/%lld", num[id_target], den[id_target]);
         }
         else{
             fprintf(g, "0\n");
